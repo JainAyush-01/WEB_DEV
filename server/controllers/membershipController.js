@@ -78,6 +78,17 @@ const buyMembership = async (req, res) => {
       }
     }
 
+    // Apply Gamification Point Discount (1 Point = ₹1 discount, max 50% of price)
+    const user = await User.findById(req.user._id);
+    let pointsUsed = 0;
+    if (user && user.points > 0) {
+      const maxDiscount = Math.floor(finalPrice * 0.5); // max 50% off
+      pointsUsed = Math.min(user.points, maxDiscount);
+      finalPrice -= pointsUsed;
+      user.points -= pointsUsed;
+      await user.save();
+    }
+
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + plan.durationDays);
 
@@ -88,6 +99,13 @@ const buyMembership = async (req, res) => {
       endDate,
       amountPaid: finalPrice
     });
+
+    if (pointsUsed > 0) {
+      await Notification.create({
+        userId: user._id,
+        message: `You redeemed ${pointsUsed} points for a ₹${pointsUsed} discount on your new plan!`
+      });
+    }
 
     res.status(201).json(membership);
   } catch (error) {
@@ -299,6 +317,25 @@ const unfreezeMembership = async (req, res) => {
   try {
     const membership = await Membership.findOne({ userId: req.user._id, status: 'frozen' });
     if (!membership) return res.status(400).json({ message: 'No frozen membership found.' });
+
+    // Find the latest freeze record for this membership
+    const freezeRecord = await FreezeRecord.findOne({ membership_id: membership._id }).sort({ freeze_start_date: -1 });
+    
+    if (freezeRecord) {
+      const now = new Date();
+      if (new Date(freezeRecord.freeze_end_date) > now) {
+        // Unfreezing early. Subtract remaining frozen days from endDate
+        const remainingMs = new Date(freezeRecord.freeze_end_date) - now;
+        const remainingDays = Math.ceil(remainingMs / (1000 * 60 * 60 * 24));
+        
+        const currentEnd = new Date(membership.endDate);
+        currentEnd.setDate(currentEnd.getDate() - remainingDays);
+        membership.endDate = currentEnd;
+        
+        freezeRecord.freeze_end_date = now;
+        await freezeRecord.save();
+      }
+    }
 
     membership.status = 'active';
     await membership.save();

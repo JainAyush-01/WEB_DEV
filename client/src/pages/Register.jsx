@@ -38,10 +38,6 @@ const Register = () => {
     let fieldSchema;
     switch (field) {
       case 'name':
-        if (/\d/.test(value)) {
-          setErrors(prev => ({ ...prev, name: 'Numbers are not allowed in the name' }));
-          return;
-        }
         fieldSchema = z.string().min(2, "Name must be at least 2 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters and spaces");
         break;
       case 'collegeId':
@@ -65,6 +61,9 @@ const Register = () => {
 
   const handleChange = (field, value) => {
     let finalValue = value;
+    if (field === 'name') {
+      if (/\d/.test(value)) return; // Prevent number from being entered
+    }
     if (field === 'email' || field === 'collegeId') {
       finalValue = value.toLowerCase();
     }
@@ -132,7 +131,7 @@ const Register = () => {
           {errors.name && <p className="field-error">{errors.name}</p>}
 
           <div className="input-group">
-            <input type="text" name="collegeIdField" autoComplete="off" className={`form-control ${errors.collegeId ? 'input-error' : ''}`} placeholder="College ID (e.g. 24UCS001)" value={formData.collegeId} onChange={e => handleChange('collegeId', e.target.value)} />
+            <input type="text" name="collegeIdField" autoComplete="off" className={`form-control ${errors.collegeId ? 'input-error' : ''}`} placeholder="College ID (e.g. 24cse001)" value={formData.collegeId} onChange={e => handleChange('collegeId', e.target.value)} />
             <div className="input-group-append"><span className="input-group-text">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             </span></div>
@@ -169,7 +168,7 @@ const Register = () => {
           </div>
 
           <div className="flush-buttons">
-            <button type="submit" className="btn btn-success btn-block" disabled={hasErrors}>Register</button>
+            <button type="submit" className="btn btn-success btn-block">Register</button>
             <Link to="/login" className="btn btn-primary btn-block" style={{textDecoration:'none'}}>I already have an account</Link>
           </div>
         </form>

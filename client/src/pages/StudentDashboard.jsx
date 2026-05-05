@@ -145,9 +145,9 @@ const StudentDashboard = () => {
             
             <div style={{ marginTop: '15px', display: 'flex', gap: '10px', alignItems: 'center' }}>
               {activeMembership.status === 'frozen' ? (
-                <button className="btn btn-sm btn-primary" onClick={handleUnfreeze}>🔥 Unfreeze</button>
+                <button className="btn btn-sm btn-primary" onClick={handleUnfreeze}>Unfreeze</button>
               ) : (
-                <button className="btn btn-sm btn-outline" onClick={handleFreeze}>❄️ Freeze</button>
+                <button className="btn btn-sm btn-outline" onClick={handleFreeze}>Freeze</button>
               )}
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginLeft: 'auto' }}>

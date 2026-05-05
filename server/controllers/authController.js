@@ -36,6 +36,10 @@ const registerUser = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      collegeId: user.collegeId,
+      level: user.level,
+      points: user.points,
+      referralCode: user.referralCode,
       token: generateToken(user._id)
     });
   } catch (error) {
@@ -58,6 +62,10 @@ const loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        collegeId: user.collegeId,
+        level: user.level,
+        points: user.points,
+        referralCode: user.referralCode,
         token: generateToken(user._id)
       });
     } else {
@@ -115,4 +123,13 @@ const referUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getAllUsers, makeAdmin, referUser };
+const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getAllUsers, makeAdmin, referUser, getMe };

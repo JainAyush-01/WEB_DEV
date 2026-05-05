@@ -9,12 +9,22 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const initAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const { data } = await api.get('/auth/me');
+          setUser(data);
+          localStorage.setItem('user', JSON.stringify(data));
+        } catch (err) {
+          console.error("Failed to fetch fresh user data", err);
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) setUser(JSON.parse(storedUser));
+        }
+      }
+      setLoading(false);
+    };
+    initAuth();
   }, []);
 
   const login = async (email, password) => {
