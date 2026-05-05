@@ -7,7 +7,7 @@ import api from '../utils/api';
 const PaymentSimulator = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, refreshUser } = useContext(AuthContext);
   const { plan, isUpgrade, isRenew, actionId } = location.state || {};
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -45,6 +45,12 @@ const PaymentSimulator = () => {
         } else {
           await api.post('/memberships/buy', { planId: plan._id });
         }
+        
+        // Refresh the user profile in context to get updated points
+        if (refreshUser) {
+          await refreshUser();
+        }
+        
         setLoading(false);
         navigate('/', { replace: true });
       } catch (err) {

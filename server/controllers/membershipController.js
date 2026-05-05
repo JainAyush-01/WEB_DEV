@@ -86,6 +86,12 @@ const buyMembership = async (req, res) => {
       pointsUsed = Math.min(user.points, maxDiscount);
       finalPrice -= pointsUsed;
       user.points -= pointsUsed;
+      
+      let trueLevel = 'Bronze';
+      if (user.points >= 300) trueLevel = 'Gold';
+      else if (user.points >= 100) trueLevel = 'Silver';
+      user.level = trueLevel;
+
       await user.save();
     }
 
