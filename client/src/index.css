@@ -1,0 +1,590 @@
+/* ============================================================
+   LNMIIT Gym Portal - Styles matching login.lnmiit.ac.in exactly
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+
+/* ── CSS Variables ── */
+:root {
+  --sidebar-width: 250px;
+  --sidebar-bg: #ffffff;
+  --body-bg: #f4f6f9;
+  --header-bg: #ffffff;
+  --card-border: #dee2e6;
+  --text-dark: #212529;
+  --text-muted: #6c757d;
+  --link-blue: #007bff;
+  --link-hover: #0056b3;
+  --active-pink: #e6186a;
+  --teal: #17a2b8;
+  --green: #28a745;
+  --red: #dc3545;
+  --font: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--body-bg); color: var(--text-dark); font-size: 1rem; line-height: 1.5; }
+a { text-decoration: none; color: var(--link-blue); }
+a:hover { color: var(--link-hover); }
+ul { list-style: none; }
+img { max-width: 100%; }
+
+/* ── Utilities ── */
+.text-center { text-align: center; }
+.mt-1 { margin-top: .5rem; }
+.mt-2 { margin-top: 1rem; }
+.mb-1 { margin-bottom: .5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.ml-1 { margin-left: .5rem; }
+
+/* ================================================================
+   AUTH PAGES  (Login / Register)
+   ================================================================ */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #e9ecef;
+}
+
+.login-box { width: 380px; }
+
+.login-logo { text-align: center; margin-bottom: 20px; }
+.login-logo img { height: 80px; }
+.login-logo p {
+  margin-top: 5px;
+  font-size: .8rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  letter-spacing: .3px;
+}
+
+.login-card-body {
+  background: #fff;
+  padding: 25px 30px;
+  box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+  border-radius: 4px;
+}
+
+.login-box-msg {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--text-muted);
+  font-size: .875rem;
+}
+
+/* Input groups */
+.input-group {
+  display: flex;
+  margin-bottom: 1rem;
+}
+.input-group .form-control {
+  flex: 1;
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.input-group-append { display: flex; }
+.input-group-text {
+  display: flex;
+  align-items: center;
+  padding: 0 .75rem;
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-left: 0;
+  border-radius: 0 .25rem .25rem 0;
+  color: #aaa;
+}
+
+/* ================================================================
+   FORM CONTROLS
+   ================================================================ */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: .5rem .75rem;
+  font-size: .9rem;
+  color: #495057;
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  outline: none;
+  transition: border-color .15s;
+}
+.form-control::placeholder { color: #aaa; }
+.form-control:focus { border-color: #80bdff; box-shadow: 0 0 0 .2rem rgba(0,123,255,.15); }
+.form-control:focus + .input-group-append .input-group-text { border-color: #80bdff; }
+
+/* Validation error styles */
+.form-control.input-error { border-color: #dc3545; }
+.form-control.input-error:focus { box-shadow: 0 0 0 .2rem rgba(220,53,69,.2); }
+.input-group .form-control.input-error + .input-group-append .input-group-text { border-color: #dc3545; color: #dc3545; }
+.field-error {
+  color: #dc3545;
+  font-size: .78rem;
+  margin: -8px 0 10px 2px;
+}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  padding: .5rem .75rem;
+  font-size: .9rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.btn-block { display: block; width: 100%; }
+.btn-sm { padding: .3rem .6rem; font-size: .8rem; }
+
+.btn-primary   { background: var(--link-blue); color: #fff; border-color: var(--link-blue); }
+.btn-primary:hover { background: #0069d9; border-color: #0062cc; }
+
+.btn-success   { background: var(--green); color: #fff; border-color: var(--green); }
+.btn-success:hover { background: #218838; }
+
+.btn-danger    { background: var(--red); color: #fff; border-color: var(--red); }
+.btn-danger:hover  { background: #c82333; }
+
+.btn-outline   { background: transparent; color: var(--link-blue); border-color: var(--link-blue); }
+.btn-outline:hover { background: var(--link-blue); color: #fff; }
+
+/* Flush (stacked) buttons on login page */
+.flush-buttons { display: flex; flex-direction: column; }
+.flush-buttons .btn { border-radius: 0; }
+.flush-buttons .btn:first-child { border-radius: .25rem .25rem 0 0; }
+.flush-buttons .btn:last-child  { border-radius: 0 0 .25rem .25rem; }
+
+/* Logout button (teal pill) */
+.btn-logout {
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  padding: 6px 18px;
+  border-radius: .25rem;
+  cursor: pointer;
+  font-size: .85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-logout:hover { background: #138496; }
+
+/* ================================================================
+   BADGES
+   ================================================================ */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: .75rem;
+  font-weight: 700;
+  border-radius: .25rem;
+  color: #fff;
+  vertical-align: middle;
+}
+.bg-success { background: var(--green); }
+.bg-danger  { background: var(--red); }
+.bg-warning { background: #ffc107; color: #212529; }
+
+/* ================================================================
+   LAYOUT  (sidebar + content wrapper)
+   ================================================================ */
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.main-sidebar {
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--card-border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: transform .3s ease, width .3s ease;
+}
+
+/* When sidebar is collapsed, slide it off-screen */
+.sidebar-collapsed .main-sidebar {
+  transform: translateX(calc(-1 * var(--sidebar-width)));
+}
+.sidebar-collapsed .content-wrapper {
+  margin-left: 0;
+}
+
+/* Logo area */
+.brand-link {
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-image { height: 38px; }
+.brand-title {
+  font-size: .7rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* User panel */
+.user-panel {
+  padding: 15px;
+  border-bottom: 1px solid var(--card-border);
+}
+.user-panel .user-name {
+  font-weight: 700;
+  font-size: .95rem;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.user-panel .info p {
+  margin: 0;
+  font-size: .78rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Navigation */
+.sidebar-menu {
+  padding: 8px 0;
+}
+.sidebar-menu li {
+  padding: 0 8px;
+}
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  color: var(--text-dark);
+  border-radius: 4px;
+  margin-bottom: 2px;
+  font-size: .9rem;
+  transition: background .15s;
+}
+.sidebar-menu a:hover { background: rgba(0,0,0,.04); }
+.sidebar-menu a.active {
+  background: var(--active-pink);
+  color: #fff;
+}
+.sidebar-menu .nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ── Content Wrapper ── */
+.content-wrapper {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--body-bg);
+  transition: margin-left .3s ease;
+}
+
+/* ── Header ── */
+.main-header {
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--card-border);
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 57px;
+  flex-shrink: 0;
+}
+.nav-link {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: rgba(0,0,0,.5);
+  cursor: pointer;
+  padding: 8px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Content Header (page title + breadcrumb) ── */
+.content-header {
+  padding: 15px 20px 10px;
+}
+.content-header h1 {
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin: 0;
+  color: var(--text-dark);
+}
+.breadcrumb {
+  font-size: .85rem;
+  margin-top: 2px;
+}
+.breadcrumb a { color: #17a2b8; }
+.breadcrumb span { color: var(--text-muted); }
+
+/* ── Section Content ── */
+.content {
+  padding: 0 20px 20px;
+  flex: 1;
+}
+
+/* ── Footer ── */
+.main-footer {
+  background: var(--header-bg);
+  border-top: 1px solid var(--card-border);
+  padding: 15px 20px;
+  font-size: .85rem;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.main-footer strong { color: var(--link-blue); }
+
+/* ================================================================
+   CARDS  (generic white box)
+   ================================================================ */
+.card {
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-radius: .25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+}
+.card-header {
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--card-border);
+  background: transparent;
+  font-weight: 400;
+}
+.card-body {
+  padding: 1.25rem;
+}
+
+/* ================================================================
+   LIST ITEMS  (the pink-bordered course-card style from LNMIIT)
+   ================================================================ */
+.list-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-left: 4px solid var(--active-pink);
+  border-radius: .25rem;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  color: var(--link-blue);
+  cursor: pointer;
+  font-size: .95rem;
+  transition: background .15s, box-shadow .15s;
+}
+.list-card:hover {
+  background: #fdfdfd;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+
+/* ================================================================
+   STATS BOXES  (Admin dashboard)
+   ================================================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+}
+.stat-box {
+  background: #fff;
+  border-radius: .25rem;
+  padding: 20px;
+  box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+  border-left: 4px solid var(--active-pink);
+}
+.stat-box h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--active-pink);
+}
+.stat-box p {
+  margin: 5px 0 0;
+  font-size: .9rem;
+  color: var(--text-muted);
+}
+
+/* ================================================================
+   PLAN CARDS  (grid of plans)
+   ================================================================ */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 15px;
+}
+.plan-card {
+  background: #fff;
+  border-radius: .25rem;
+  padding: 25px 20px;
+  text-align: center;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+  transition: transform .2s, box-shadow .2s;
+}
+.plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+.plan-card h3 { font-size: 1.4rem; margin-bottom: .5rem; }
+.plan-card .price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--active-pink);
+  margin-bottom: .25rem;
+}
+.plan-card .duration { color: var(--text-muted); margin-bottom: .5rem; }
+.plan-card .desc { color: #888; font-size: .85rem; margin-bottom: 1rem; }
+
+/* ================================================================
+   TABLES
+   ================================================================ */
+.table-responsive { overflow-x: auto; }
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: .75rem;
+  text-align: left;
+  border-top: 1px solid #dee2e6;
+  font-size: .9rem;
+}
+.table thead th {
+  border-bottom: 2px solid #dee2e6;
+  background: #f8f9fa;
+  font-weight: 600;
+}
+.table tbody tr:hover { background: #f8f9fa; }
+
+/* ================================================================
+   NOTIFICATION BELL
+   ================================================================ */
+.notification-wrapper { position: relative; }
+.bell-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  position: relative;
+  padding: 4px;
+  color: rgba(0,0,0,.5);
+}
+.bell-badge {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  background: var(--red);
+  color: #fff;
+  border-radius: 50%;
+  font-size: .6rem;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.notification-dropdown {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  width: 300px;
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-radius: .25rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,.15);
+  max-height: 350px;
+  overflow-y: auto;
+  z-index: 2000;
+}
+.notification-item {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: .85rem;
+  color: var(--text-dark);
+  cursor: pointer;
+}
+.notification-item:last-child { border-bottom: none; }
+.notification-item.unread {
+  background: #f0f7ff;
+  border-left: 3px solid var(--link-blue);
+  font-weight: 600;
+}
+.notification-item:hover { background: #f8f9fa; }
+
+/* ================================================================
+   PAYMENT PAGE
+   ================================================================ */
+.payment-wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+.payment-card {
+  background: #fff;
+  border-radius: .25rem;
+  padding: 30px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: .95rem;
+}
+.summary-row.total {
+  border-top: 2px solid #dee2e6;
+  margin-top: 8px;
+  padding-top: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.spinner-wrap { text-align: center; padding: 20px 0; }
+.spinner {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(0,0,0,.1);
+  border-left-color: var(--active-pink);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ================================================================
+   ADMIN FORM (inline plan form)
+   ================================================================ */
+.admin-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: flex-end;
+}
+.admin-form .form-control { flex: 1 1 180px; }
