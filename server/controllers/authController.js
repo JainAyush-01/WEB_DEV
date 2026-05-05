@@ -13,12 +13,12 @@ const generateToken = (id) => {
 const registerUser = async (req, res) => {
   try {
     const { name, collegeId, email, password } = req.body;
-    
+
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    //const salt = await bcrypt.genSalt(10);
+    const hashedPassword = password;
 
     const referralCode = crypto.randomBytes(3).toString('hex').toUpperCase();
 
@@ -103,7 +103,7 @@ const referUser = async (req, res) => {
   try {
     const { code } = req.body;
     const referrer = await User.findOne({ referralCode: code });
-    
+
     if (!referrer) return res.status(404).json({ message: 'Invalid referral code' });
     if (referrer._id.toString() === req.user._id.toString()) return res.status(400).json({ message: 'Cannot refer yourself' });
 
