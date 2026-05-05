@@ -20,7 +20,7 @@ const userRegistrationSchema = z.object({
 });
 
 const Register = () => {
-  const [formData, setFormData] = useState({ name: '', collegeId: '', email: '', password: '', referralCode: '' });
+  const [formData, setFormData] = useState({ name: '', collegeId: '', email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const { register } = useContext(AuthContext);
@@ -94,13 +94,7 @@ const Register = () => {
         password: formData.password
       });
 
-      if (formData.referralCode) {
-        try {
-          await api.post('/auth/refer', { code: formData.referralCode });
-        } catch (referErr) {
-          console.error("Referral failed:", referErr.response?.data?.message);
-        }
-      }
+
 
       if (user.role === 'admin') navigate('/admin');
       else navigate('/');
@@ -159,13 +153,6 @@ const Register = () => {
             </div>
           </div>
           {errors.password && <p className="field-error">{errors.password}</p>}
-
-          <div className="input-group">
-            <input type="text" name="referralCode" autoComplete="off" className="form-control" placeholder="Referral Code (Optional)" value={formData.referralCode} onChange={e => handleChange('referralCode', e.target.value)} />
-            <div className="input-group-append"><span className="input-group-text">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-            </span></div>
-          </div>
 
           <div className="flush-buttons">
             <button type="submit" className="btn btn-success btn-block">Register</button>

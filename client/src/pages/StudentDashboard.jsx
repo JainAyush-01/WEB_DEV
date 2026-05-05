@@ -50,12 +50,7 @@ const StudentDashboard = () => {
     } catch (err) { alert(err.response?.data?.message || 'Error freezing membership'); }
   };
 
-  const copyReferral = () => {
-    if (user?.referralCode) {
-      navigator.clipboard.writeText(user.referralCode);
-      alert('Referral code copied to clipboard!');
-    }
-  };
+
 
   const toggleAutoRenew = async (id) => {
     try {
@@ -115,18 +110,7 @@ const StudentDashboard = () => {
           </div>
         )}
 
-        {/* Referral Code */}
-        {user?.referralCode && (
-          <div className="card mb-3">
-            <div className="card-body d-flex justify-content-between align-items-center" style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <div>
-                <strong>🎁 Your Referral Code: <span style={{ color: 'var(--active-pink)' }}>{user.referralCode}</span></strong>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Share this code with friends! When they register, you both get 100 bonus points.</p>
-              </div>
-              <button className="btn btn-outline" onClick={copyReferral}>Copy Code</button>
-            </div>
-          </div>
-        )}
+
 
         {/* Active membership */}
         {activeMembership && (

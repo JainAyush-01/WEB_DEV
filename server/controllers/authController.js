@@ -2,7 +2,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback_secret', {
@@ -17,18 +16,12 @@ const registerUser = async (req, res) => {
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-    //const salt = await bcrypt.genSalt(10);
-    const hashedPassword = password;
-
-    const referralCode = crypto.randomBytes(3).toString('hex').toUpperCase();
-
     const user = await User.create({
       name,
       collegeId,
       email,
-      password: hashedPassword,
-      role: 'student', // Force role to student for public registration
-      referralCode
+      password,
+      role: 'student' // Force role to student for public registration
     });
 
     res.status(201).json({
@@ -39,7 +32,6 @@ const registerUser = async (req, res) => {
       collegeId: user.collegeId,
       level: user.level,
       points: user.points,
-      referralCode: user.referralCode,
       token: generateToken(user._id)
     });
   } catch (error) {
@@ -65,7 +57,6 @@ const loginUser = async (req, res) => {
         collegeId: user.collegeId,
         level: user.level,
         points: user.points,
-        referralCode: user.referralCode,
         token: generateToken(user._id)
       });
     } else {
@@ -99,29 +90,6 @@ const makeAdmin = async (req, res) => {
   }
 };
 
-const referUser = async (req, res) => {
-  try {
-    const { code } = req.body;
-    const referrer = await User.findOne({ referralCode: code });
-
-    if (!referrer) return res.status(404).json({ message: 'Invalid referral code' });
-    if (referrer._id.toString() === req.user._id.toString()) return res.status(400).json({ message: 'Cannot refer yourself' });
-
-    const user = await User.findById(req.user._id);
-    if (user.referredBy) return res.status(400).json({ message: 'You have already used a referral code' });
-
-    user.referredBy = referrer._id;
-    user.points += 100;
-    referrer.points += 100;
-
-    await user.save();
-    await referrer.save();
-
-    res.json({ message: 'Referral successful! 100 points awarded.', points: user.points });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 const getMe = async (req, res) => {
   try {
@@ -132,4 +100,4 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getAllUsers, makeAdmin, referUser, getMe };
+module.exports = { registerUser, loginUser, getAllUsers, makeAdmin, getMe };

@@ -14,15 +14,13 @@ const {
   toggleAutoRenew
 } = require('../controllers/membershipController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
-const validate = require('../middleware/validate');
-const { membershipSubscribeSchema, membershipFreezeSchema } = require('../validators/schemas');
 
 router.get('/my', protect, getMyMemberships);
-router.post('/buy', protect, validate(membershipSubscribeSchema), buyMembership);
+router.post('/buy', protect, buyMembership);
 router.post('/trial', protect, startTrial);
 router.put('/renew/:id', protect, renewMembership);
 router.put('/upgrade/:id', protect, upgradeMembership);
-router.post('/freeze', protect, validate(membershipFreezeSchema), freezeMembership);
+router.post('/freeze', protect, freezeMembership);
 router.post('/unfreeze', protect, unfreezeMembership);
 router.put('/:id/auto-renew', protect, toggleAutoRenew);
 
