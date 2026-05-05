@@ -27,7 +27,19 @@ const getMyMemberships = async (req, res) => {
     await autoExpire(req.user._id);
     const memberships = await Membership.find({ userId: req.user._id })
       .populate('planId')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Calculate total frozen days for each membership
+    for (let m of memberships) {
+      const existingFreezes = await FreezeRecord.find({ membership_id: m._id });
+      const totalFrozenDays = existingFreezes.reduce((sum, f) => {
+        const diff = Math.ceil((new Date(f.freeze_end_date) - new Date(f.freeze_start_date)) / (1000 * 60 * 60 * 24));
+        return sum + diff;
+      }, 0);
+      m.totalFrozenDays = totalFrozenDays;
+    }
+
     res.json(memberships);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -41,10 +53,14 @@ const buyMembership = async (req, res) => {
     const plan = await Plan.findById(planId);
     if (!plan) return res.status(404).json({ message: 'Plan not found' });
 
-    // Check if user already has an active membership
-    const existing = await Membership.findOne({ userId: req.user._id, status: 'active' });
+    // Check if user has an active membership to queue
+    const existing = await Membership.findOne({ userId: req.user._id, status: { $in: ['active', 'frozen'] } }).sort({ endDate: -1 });
+    let startDate = new Date();
     if (existing) {
-      return res.status(400).json({ message: 'You already have an active membership. Use Renew or Upgrade instead.' });
+      // Queue it after the latest active/frozen membership
+      if (new Date(existing.endDate) > startDate) {
+        startDate = new Date(existing.endDate);
+      }
     }
 
     // Capacity limit check
@@ -62,8 +78,7 @@ const buyMembership = async (req, res) => {
       }
     }
 
-    const startDate = new Date();
-    const endDate = new Date();
+    const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + plan.durationDays);
 
     const membership = await Membership.create({
@@ -179,6 +194,9 @@ const upgradeMembership = async (req, res) => {
     const oldMembership = await Membership.findById(req.params.id).populate('planId');
 
     if (!oldMembership || !newPlan) return res.status(404).json({ message: 'Not found' });
+    if (oldMembership.status !== 'active' && oldMembership.status !== 'frozen') {
+      return res.status(400).json({ message: 'Only active members can upgrade their plan' });
+    }
 
     // Same plan = renewal
     if (oldMembership.planId._id.toString() === newPlanId) {

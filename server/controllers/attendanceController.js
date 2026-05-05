@@ -76,6 +76,61 @@ const checkOut = async (req, res) => {
   }
 };
 
+// POST /api/attendance/admin/checkin
+const adminCheckIn = async (req, res) => {
+  try {
+    const { rollNo } = req.body;
+    const user = await User.findOne({ collegeId: rollNo.toLowerCase() });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const activeMembership = await Membership.findOne({ userId: user._id, status: 'active' });
+    if (!activeMembership) return res.status(400).json({ message: 'User does not have an active membership.' });
+
+    const openSession = await Attendance.findOne({ user_id: user._id, exit_time: null });
+    if (openSession) return res.status(400).json({ message: 'User already has an open session.' });
+
+    const attendance = await Attendance.create({ user_id: user._id, entry_time: new Date() });
+    res.status(201).json({ message: `Checked in ${user.name} successfully.`, attendance });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// POST /api/attendance/admin/checkout
+const adminCheckOut = async (req, res) => {
+  try {
+    const { rollNo } = req.body;
+    const user = await User.findOne({ collegeId: rollNo.toLowerCase() });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const openSession = await Attendance.findOne({ user_id: user._id, exit_time: null });
+    if (!openSession) return res.status(400).json({ message: 'No open session found for this user.' });
+
+    const exitTime = new Date();
+    const durationMs = exitTime - new Date(openSession.entry_time);
+    const durationMinutes = Math.round(durationMs / (1000 * 60));
+
+    if (durationMinutes < 30) {
+      await Attendance.findByIdAndDelete(openSession._id);
+      return res.json({ message: `Session discarded for ${user.name} (too short: ${durationMinutes} min).` });
+    }
+
+    openSession.exit_time = exitTime;
+    openSession.duration_minutes = durationMinutes;
+    await openSession.save();
+
+    user.points += 10;
+    let levelUp = false;
+    if (user.points >= 300 && user.level !== 'Gold') { user.level = 'Gold'; levelUp = true; } 
+    else if (user.points >= 100 && user.points < 300 && user.level !== 'Silver') { user.level = 'Silver'; levelUp = true; }
+    await user.save();
+
+    res.json({ message: `Checked out ${user.name}. ${durationMinutes} mins. +10 points!${levelUp ? ' Leveled Up!' : ''}` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // GET /api/attendance/daily — get daily attendance for logged-in user
 const getDailyAttendance = async (req, res) => {
   try {
@@ -146,4 +201,4 @@ const getInsights = async (req, res) => {
   }
 };
 
-module.exports = { checkIn, checkOut, getDailyAttendance, getInsights };
+module.exports = { checkIn, checkOut, getDailyAttendance, getInsights, adminCheckIn, adminCheckOut };

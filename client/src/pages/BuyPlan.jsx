@@ -51,7 +51,12 @@ const BuyPlan = () => {
           {plans.map(plan => {
             // Very simple match: if suggestion contains plan name loosely
             const isRecommended = insights && insights.suggestion.toLowerCase().includes(plan.name.toLowerCase());
-            return <PlanCard key={plan._id} plan={plan} onSelect={handleSelectPlan} recommended={isRecommended} />;
+            
+            // Find max active members
+            const maxMembers = Math.max(...plans.map(p => p.activeMembersCount || 0));
+            const isPopular = (plan.activeMembersCount === maxMembers) && (maxMembers > 0);
+
+            return <PlanCard key={plan._id} plan={plan} onSelect={handleSelectPlan} recommended={isRecommended} isPopular={isPopular} />;
           })}
         </div>
       </section>

@@ -52,11 +52,23 @@ const NotificationBell = () => {
       {isOpen && (
         <div className="notification-dropdown">
           {notifications.length === 0 && <div className="notification-item">No notifications</div>}
-          {notifications.map(n => (
-            <div key={n._id} className={`notification-item ${n.isRead ? '' : 'unread'}`} onClick={() => markAsRead(n._id)}>
-              {n.message}
-            </div>
-          ))}
+          {notifications.map(n => {
+            const timeAgo = Math.round((new Date() - new Date(n.createdAt)) / 60000); // mins ago
+            const timeStr = timeAgo < 60 ? `${timeAgo}m ago` : timeAgo < 1440 ? `${Math.floor(timeAgo/60)}h ago` : `${Math.floor(timeAgo/1440)}d ago`;
+            return (
+              <div key={n._id} className={`notification-item ${n.isRead ? '' : 'unread'}`}>
+                <div>{n.message}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '5px' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#6c757d' }}>{timeStr}</span>
+                  {!n.isRead && (
+                    <button className="btn btn-sm" style={{ padding: '0 5px', fontSize: '0.7rem' }} onClick={() => markAsRead(n._id)}>
+                      Mark read
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

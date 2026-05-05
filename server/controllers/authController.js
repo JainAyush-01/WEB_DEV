@@ -39,6 +39,10 @@ const registerUser = async (req, res) => {
       token: generateToken(user._id)
     });
   } catch (error) {
+    if (error.code === 11000) {
+      if (error.keyPattern.email) return res.status(400).json({ message: 'Email is already registered' });
+      if (error.keyPattern.collegeId) return res.status(400).json({ message: 'Roll No is already registered' });
+    }
     res.status(500).json({ message: error.message });
   }
 };

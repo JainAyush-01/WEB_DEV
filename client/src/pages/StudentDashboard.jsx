@@ -32,18 +32,12 @@ const StudentDashboard = () => {
     } catch (err) { console.error(err); }
   };
 
-  const handleCheckIn = async () => {
+  const handleUnfreeze = async () => {
     try {
-      const { data } = await api.post('/attendance/checkin');
+      const { data } = await api.post('/memberships/unfreeze');
       alert(data.message);
-    } catch (err) { alert(err.response?.data?.message || 'Error checking in'); }
-  };
-
-  const handleCheckOut = async () => {
-    try {
-      const { data } = await api.post('/attendance/checkout');
-      alert(data.message);
-    } catch (err) { alert(err.response?.data?.message || 'Error checking out'); }
+      fetchMemberships();
+    } catch (err) { alert(err.response?.data?.message || 'Error unfreezing membership'); }
   };
 
   const handleFreeze = async () => {
@@ -54,6 +48,13 @@ const StudentDashboard = () => {
       alert(data.message);
       fetchMemberships();
     } catch (err) { alert(err.response?.data?.message || 'Error freezing membership'); }
+  };
+
+  const copyReferral = () => {
+    if (user?.referralCode) {
+      navigator.clipboard.writeText(user.referralCode);
+      alert('Referral code copied to clipboard!');
+    }
   };
 
   const toggleAutoRenew = async (id) => {
@@ -73,8 +74,15 @@ const StudentDashboard = () => {
     }
   };
 
-  // Find the latest active and latest expired memberships
-  const activeMembership = memberships.find(m => m.status === 'active');
+  // Find the currently active and queued memberships
+  const now = new Date();
+  const allActive = memberships.filter(m => m.status === 'active' || m.status === 'frozen');
+  
+  // Currently active is the one whose startDate is <= now
+  const activeMembership = allActive.find(m => new Date(m.startDate) <= now);
+  // Queued are those whose startDate is > now
+  const queuedMemberships = allActive.filter(m => new Date(m.startDate) > now);
+
   const latestExpired = memberships.find(m => m.status === 'expired');
 
   // Check if membership is expiring within 3 days
@@ -107,26 +115,15 @@ const StudentDashboard = () => {
           </div>
         )}
 
-        {/* Attendance Controls */}
-        <div className="card mb-3">
-          <div className="card-body d-flex justify-content-between align-items-center" style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div>
-              <strong>Gym Attendance</strong>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Check in when you arrive, check out when you leave (min 30 mins to earn points).</p>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="btn btn-success" onClick={handleCheckIn}>Check In</button>
-              <button className="btn btn-danger" onClick={handleCheckOut}>Check Out</button>
-            </div>
-          </div>
-        </div>
-
         {/* Referral Code */}
         {user?.referralCode && (
           <div className="card mb-3">
-            <div className="card-body">
-              <strong>🎁 Your Referral Code: <span style={{ color: 'var(--active-pink)' }}>{user.referralCode}</span></strong>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Share this code with friends! When they register, you both get 100 bonus points.</p>
+            <div className="card-body d-flex justify-content-between align-items-center" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div>
+                <strong>🎁 Your Referral Code: <span style={{ color: 'var(--active-pink)' }}>{user.referralCode}</span></strong>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Share this code with friends! When they register, you both get 100 bonus points.</p>
+              </div>
+              <button className="btn btn-outline" onClick={copyReferral}>Copy Code</button>
             </div>
           </div>
         )}
@@ -134,13 +131,24 @@ const StudentDashboard = () => {
         {/* Active membership */}
         {activeMembership && (
           <div className="list-card">
-            <strong>{activeMembership.planId?.name}</strong> — Active until {new Date(activeMembership.endDate).toLocaleDateString()}
+            <strong>{activeMembership.planId?.name}</strong> — {activeMembership.status === 'frozen' ? 'Frozen' : 'Active'} until {new Date(activeMembership.endDate).toLocaleDateString()}
+            {activeMembership.totalFrozenDays > 0 && (
+              <span style={{ fontSize: '0.85rem', color: '#6c757d', marginLeft: '10px' }}>(Frozen for {activeMembership.totalFrozenDays} days)</span>
+            )}
             <span style={{float:'right'}}>
-              <span className="badge bg-success">Active</span>
+              {activeMembership.status === 'frozen' ? (
+                <span className="badge" style={{ backgroundColor: '#0d6efd', color: '#fff' }}>Frozen</span>
+              ) : (
+                <span className="badge bg-success">Active</span>
+              )}
             </span>
             
             <div style={{ marginTop: '15px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <button className="btn btn-sm btn-outline" onClick={handleFreeze}>❄️ Freeze</button>
+              {activeMembership.status === 'frozen' ? (
+                <button className="btn btn-sm btn-primary" onClick={handleUnfreeze}>🔥 Unfreeze</button>
+              ) : (
+                <button className="btn btn-sm btn-outline" onClick={handleFreeze}>❄️ Freeze</button>
+              )}
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginLeft: 'auto' }}>
                 <input 
@@ -163,6 +171,16 @@ const StudentDashboard = () => {
             )}
           </div>
         )}
+
+        {/* Queued memberships */}
+        {queuedMemberships.length > 0 && queuedMemberships.map(q => (
+          <div key={q._id} className="list-card" style={{ borderLeft: '4px solid #ffc107', opacity: 0.85 }}>
+            <strong>{q.planId?.name} (Queued)</strong> — Starts on {new Date(q.startDate).toLocaleDateString()}
+            <span style={{float:'right'}}>
+              <span className="badge bg-warning">Queued</span>
+            </span>
+          </div>
+        ))}
 
         {/* Expired membership (only show if no active) */}
         {!activeMembership && latestExpired && (

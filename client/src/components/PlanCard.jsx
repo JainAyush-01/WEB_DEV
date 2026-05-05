@@ -1,11 +1,14 @@
 // Displays details of a subscription plan as a card
 import React from 'react';
 
-const PlanCard = ({ plan, onSelect, actionText = 'Buy Now', recommended = false }) => {
+const PlanCard = ({ plan, onSelect, actionText = 'Buy Now', recommended = false, isPopular = false }) => {
   return (
     <div className="plan-card" style={plan.isCombo ? { border: '2px solid #ffc107', position: 'relative' } : { position: 'relative' }}>
       {recommended && (
         <span className="badge bg-success" style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)' }}>💡 Recommended</span>
+      )}
+      {isPopular && !recommended && (
+        <span className="badge" style={{ backgroundColor: '#e6186a', color: 'white', position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)' }}>Our most popular plan</span>
       )}
       {plan.isCombo && (
         <span className="badge bg-warning" style={{ position: 'absolute', top: '10px', right: '10px' }}>⭐ Combo Plan</span>

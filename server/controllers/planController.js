@@ -7,7 +7,7 @@ const getPlans = async (req, res) => {
     const now = new Date();
 
     // Apply seasonal discount if applicable
-    const plansWithDiscount = plans.map(plan => {
+    const plansWithDiscount = await Promise.all(plans.map(async (plan) => {
       const p = plan.toObject();
       p.originalPrice = p.price;
       p.discountApplied = false;
@@ -18,8 +18,12 @@ const getPlans = async (req, res) => {
           p.discountedPrice = Math.round(p.price * (1 - p.discount_percentage / 100));
         }
       }
+
+      const activeMembersCount = await require('../models/Membership').countDocuments({ planId: p._id, status: 'active' });
+      p.activeMembersCount = activeMembersCount;
+
       return p;
-    });
+    }));
 
     res.json(plansWithDiscount);
   } catch (error) {
